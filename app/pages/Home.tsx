@@ -1,9 +1,7 @@
-"use client"
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { fetchCompanyProfileFromGPT } from "@/app/services/gptService";
 import { CompanyProfile } from "@/app/types/profile";
 import ProfileCard from "@/app/components/ProfileCard";
@@ -24,37 +22,30 @@ export default function Home() {
   const handleGenerate = async () => {
     setLoading(true);
     const data = await fetchCompanyProfileFromGPT(url);
+    console.log("Generated profile data:", data);
     setProfile({ ...data, emails: [], poc: []} as CompanyProfile);
     setLoading(false);
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto mt-5 px-4 space-y-4">
-      <h1 className="text-2xl font-bold mb-4">Generate Company Profile</h1>
-
-      <Card className="p-4">
-        <div className="flex gap-2">
+    <main className="max-w-xl mx-auto mt-10 space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Generate Company Profile</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <Input
-            className="flex-1 rounded-r-none"
-            placeholder="https://example.com"
+            placeholder="Enter company website (e.g. https://acme.com)"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
           />
-          <Button
-            onClick={handleGenerate}
-            className="rounded-l-none"
-            disabled={loading}
-          >
-            {loading ? <Loader2 className="animate-spin w-4 h-4" /> : "Generate"}
+          <Button onClick={handleGenerate} disabled={loading}>
+            {loading ? "Generating..." : "Generate"}
           </Button>
-        </div>
+        </CardContent>
       </Card>
 
-      {profile && (
-        <>
-          <ProfileCard profile={profile} setProfile={setProfile} />
-        </>
-      )}
-    </div>
+      {profile && <ProfileCard profile={profile} setProfile={setProfile} />}
+    </main>
   );
 }
